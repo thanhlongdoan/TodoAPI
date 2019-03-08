@@ -15,21 +15,21 @@ function getCount(data) {
 }
 
 $(document).ready(function () {
-    getData(1);
+    getData("", 1);
     $("ul").on("click", "li #previous", function () {
-        getData((parseInt)($("#currentPage").val()) - 1);
+        getData($("#NameSearch").val(), (parseInt)($("#currentPage").val()) - 1);
     });
     $("ul").on("click", "li #next", function () {
-        getData((parseInt)($("#currentPage").val()) + 1);
+        getData($("#NameSearch").val(), (parseInt)($("#currentPage").val()) + 1);
     });
     $("ul").on("click", "li .number", function () {
-        getData($(this).val())
+        getData($("#NameSearch").val(), $(this).val())
     });
 });
-function getData(pageNumber) {
+function getData(searchString, pageNumber) {
     $.ajax({
         type: "GET",
-        url: uri + "?pageNumber=" + pageNumber,
+        url: uri + "?searchString=" + searchString + "&pageNumber=" + pageNumber,
         cache: false,
         success: function (model) {
             const tBody = $("#todos");
@@ -75,58 +75,6 @@ function getData(pageNumber) {
 
 }
 
-function searchItem(nameSearch) {
-    if (nameSearch.val() == '') {
-        getData(1);
-    }
-    else {
-        $.ajax({
-            url: uri + "/search?searchString=" + nameSearch.val(),
-            type: 'GET',
-            success: function (model) {
-                console.log(model.items)
-                $("td").html("");
-                const tBody = $("#todos");
-                $(tBody).empty();
-                getCount(model.length);
-
-                $.each(model.items, function (key, item) {
-                    const tr = $("<tr></tr>").append(
-                        $("<td></td>").append(
-                            $("<input/>", {
-                                type: "checkbox",
-                                disabled: true,
-                                checked: item.isComplete
-                            })
-                        ))
-                        .append($("<td></td>").text(item.name))
-                        .append($("<td></td>").append(
-                            $("<button>Edit</button>").on("click", function () {
-                                editItem(item.id);
-                            })
-                        ))
-                        .append($("<td></td>").append(
-                            $("<button>Delete</button>").on("click", function () {
-                                deleteItem(item.id);
-                            })
-                        ))
-                    tr.appendTo(tBody);
-                });
-
-                //$(".page").html("");
-                //var code = "<li><input type='hidden' id='currentPage' value=" + model.currentPage + " /></li>" +
-                //    "<li><button id='previous'>Previous</button></li>";
-                //for (var i = 1; i <= model.totalPages; i++) {
-                //    code = code + "<li><button class='number' value=" + i + ">" + i + "</button></li>"
-                //}
-
-                //code = code + "<li><button id='next'>Next</button></li >";
-                //$(".page").append(code);
-            }
-        });
-    }
-}
-
 function addItem() {
     const item = {
         name: $("#add-name").val(),
@@ -156,7 +104,6 @@ function deleteItem(id) {
     });
 }
 function editItem(id) {
-    console.log(todos)
     $.each(todos, function (key, item) {
         if (item.id = id) {
             $("#edit-name").val(item.name);

@@ -45,7 +45,7 @@
     <div class="form-actions no-color">
         <p>
             Tên cần tìm:
-            <input type="text" id="NameSearch" onkeyup='searchItem($("#NameSearch"))' />
+            <input type="text" id="NameSearch" onkeyup='getData($("#NameSearch").val(),1)' />
         </p>
     </div>
 
@@ -71,10 +71,7 @@
         </tr>
         <tbody id="todos"></tbody>
     </table>
-    <ul class="page">
-        <!--<li><button>1</button></li>
-        <li><button>2</button></li>-->
-    </ul>
+    <ul class="page"></ul>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>

@@ -20,34 +20,32 @@ namespace TodoApi.Controllers
             _context = context;
         }
 
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> Search(string searchString)
+        [HttpGet]
+        public async Task<ActionResult<PageModel>> GetListTodo(string searchString, int? pageNumber = 1)
         {
-            IQueryable<TodoItem> todoItems = from Name in _context.TodoItems select Name;
+            int PageSize = 3;
+            PageModel model = new PageModel();
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                todoItems = todoItems.Where(x => x.Name.Contains(searchString));
+                model = new PageModel
+                {
+                    PageSize = 3,
+                    CurrentPage = (int)pageNumber,
+                    TotalPages = (int)Math.Ceiling(_context.TodoItems.Where(x => x.Name.Contains(searchString)).Count() / (double)PageSize),
+                    items = await _context.TodoItems.Where(x => x.Name.Contains(searchString)).Skip(((int)pageNumber - 1) * PageSize).Take(PageSize).ToListAsync(),
+                };
             }
-
-            var TodoItem = await todoItems.AsNoTracking().ToListAsync();
-            return TodoItem;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<PageModel>> GetListTodo(int? pageNumber = 1)
-        {
-            int PageSize = 3;
-
-            var items = await _context.TodoItems.Skip(((int)pageNumber - 1) * PageSize).Take(PageSize).ToListAsync();
-
-            PageModel model = new PageModel
+            else
             {
-                PageSize = 3,
-                CurrentPage = (int)pageNumber,
-                TotalPages = (int)Math.Ceiling(_context.TodoItems.Count() / (double)PageSize),
-                items = items,
-            };
+                model = new PageModel
+                {
+                    PageSize = 3,
+                    CurrentPage = (int)pageNumber,
+                    TotalPages = (int)Math.Ceiling(_context.TodoItems.Count() / (double)PageSize),
+                    items = await _context.TodoItems.Skip(((int)pageNumber - 1) * PageSize).Take(PageSize).ToListAsync(),
+                };
+            }
 
             return model;
         }
