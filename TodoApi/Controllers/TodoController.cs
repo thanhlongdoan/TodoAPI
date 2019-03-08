@@ -23,14 +23,14 @@ namespace TodoApi.Controllers
         [HttpGet]
         public async Task<ActionResult<PageModel>> GetListTodo(string searchString, int? pageNumber = 1)
         {
-            int PageSize = 3;
+            int PageSize = 2;
             PageModel model = new PageModel();
 
             if (!String.IsNullOrEmpty(searchString))
             {
                 model = new PageModel
                 {
-                    PageSize = 3,
+                    PageSize = PageSize,
                     CurrentPage = (int)pageNumber,
                     TotalPages = (int)Math.Ceiling(_context.TodoItems.Where(x => x.Name.Contains(searchString)).Count() / (double)PageSize),
                     items = await _context.TodoItems.Where(x => x.Name.Contains(searchString)).Skip(((int)pageNumber - 1) * PageSize).Take(PageSize).ToListAsync(),
@@ -40,7 +40,7 @@ namespace TodoApi.Controllers
             {
                 model = new PageModel
                 {
-                    PageSize = 3,
+                    PageSize = PageSize,
                     CurrentPage = (int)pageNumber,
                     TotalPages = (int)Math.Ceiling(_context.TodoItems.Count() / (double)PageSize),
                     items = await _context.TodoItems.Skip(((int)pageNumber - 1) * PageSize).Take(PageSize).ToListAsync(),

@@ -33,15 +33,17 @@
             list-style: none;
         }
     </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
-<body>
+<body class="pl-5">
     <h1>To-do CRUD</h1>
-    <h3>Add</h3>
+    <h3>Thêm mới TODO</h3>
     <form action="javascript:void(0);" method="POST" onsubmit="addItem()">
-        <input type="text" id="add-name" placeholder="New to-do">
-        <input type="submit" value="Add">
+        <input type="text" id="add-name" placeholder="Thêm mới to-dos">
+        <input type="submit" class="btn btn-success" value="Thêm mới">
     </form>
-
+    <br />
     <div class="form-actions no-color">
         <p>
             Tên cần tìm:
@@ -50,7 +52,7 @@
     </div>
 
     <div id="spoiler">
-        <h3>Edit</h3>
+        <h3>Cập nhật</h3>
         <form class="my-form">
             <input type="hidden" id="edit-id">
             <input type="checkbox" id="edit-isComplete">
@@ -64,17 +66,19 @@
 
     <table>
         <tr>
-            <th>Is Complete</th>
-            <th>Name</th>
+            <th class="text-center">Is Complete</th>
+            <th class="text-center">Name</th>
             <th></th>
             <th></th>
         </tr>
         <tbody id="todos"></tbody>
     </table>
+    <br />
     <ul class="page"></ul>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="site.js"></script>
 </body>
 </html>
