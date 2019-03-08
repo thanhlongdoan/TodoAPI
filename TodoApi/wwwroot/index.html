@@ -27,6 +27,11 @@
             border: 1px solid;
             padding: 5px;
         }
+
+        .page {
+            display: flex;
+            list-style: none;
+        }
     </style>
 </head>
 <body>
@@ -36,6 +41,13 @@
         <input type="text" id="add-name" placeholder="New to-do">
         <input type="submit" value="Add">
     </form>
+
+    <div class="form-actions no-color">
+        <p>
+            Tên cần tìm:
+            <input type="text" id="NameSearch" onkeyup='getData($("#NameSearch").val(),1)' />
+        </p>
+    </div>
 
     <div id="spoiler">
         <h3>Edit</h3>
@@ -59,7 +71,7 @@
         </tr>
         <tbody id="todos"></tbody>
     </table>
-
+    <ul class="page"></ul>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
