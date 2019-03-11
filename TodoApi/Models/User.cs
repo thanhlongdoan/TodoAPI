@@ -30,26 +30,5 @@ namespace TodoApi.Models
         public string NumberPhone { get; set; }
 
         public string Address { get; set; }
-
-        public ICollection<TodoItem> TodoItems { get; set; }
-    }
-
-    public class GetUserViewModel
-    {
-        public string Id { get; set; }
-
-        public string Name { get; set; }
-
-        public TimeSpan Birthday { get; set; }
-
-        public int Gender { get; set; }
-
-        public string Email { get; set; }
-
-        public string NumberPhone { get; set; }
-
-        public string Address { get; set; }
-
-        public ICollection<TodoItem> TodoItems { get; set; }
     }
 }

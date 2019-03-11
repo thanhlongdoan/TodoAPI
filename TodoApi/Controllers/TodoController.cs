@@ -60,13 +60,23 @@ namespace TodoApi.Controllers
             }
             else
             {
-                User user = _context.Users.Find(userId);
+                var user = _context.Users.Find(userId);
+                GetUserViewModel modelUser = new GetUserViewModel
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Birthday = user.Birthday.Ticks,
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    NumberPhone = user.NumberPhone,
+                    Address = user.Address
+                };
                 GetTodoViewModel model = new GetTodoViewModel
                 {
                     Id = todoItem.Id,
                     Name = todoItem.Name,
                     IsComplete = todoItem.IsComplete,
-                    InfoUser = user
+                    InfoUser = modelUser
                 };
                 return model;
             }
