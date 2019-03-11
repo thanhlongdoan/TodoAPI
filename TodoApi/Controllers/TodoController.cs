@@ -50,33 +50,68 @@ namespace TodoApi.Controllers
             return model;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        [HttpGet("GetTodoItem")]
+        public async Task<ActionResult<GetTodoViewModel>> GetTodoItem(long id, string userId)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
             if (todoItem == null)
             {
                 return NotFound();
             }
-            return todoItem;
+            else
+            {
+                var query = (from todo in _context.TodoItems
+                             join user in _context.Users
+                             on todo.UserId equals user.Id
+                             where userId == todo.UserId
+                             select new
+                             {
+                                 user.Id,
+                                 user.Name,
+                                 user.Birthday,
+                                 user.Address,
+                                 user.NumberPhone
+                             }).FirstOrDefault();
+                GetTodoViewModel model = new GetTodoViewModel
+                {
+                    Id = query.Id,
+                    Name = query.Name,
+                    Birthday = query.Birthday,
+                    Address = query.Address,
+                    NumberPhone = query.NumberPhone,
+                    TodoItems = todoItem
+                };
+                return model;
+            }
         }
 
-        [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem item)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem item, string userId)
         {
-            _context.TodoItems.Add(item);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetTodoItem), new { id = item.Id }, item);
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                item.UserId = userId;
+                _context.TodoItems.Add(item);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetTodoItem), new { id = item.Id }, item);
+            }
+            return NotFound();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem item)
+        [HttpPut("PutTodoItem")]
+        public async Task<IActionResult> PutTodoItem(long id, string userId, TodoItem item)
         {
-            if (id != item.Id)
-                return BadRequest();
-            _context.Entry(item).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return Ok();
+            var user = await _context.Users.FindAsync(userId);
+            if (user != null)
+            {
+                if (id != item.Id)
+                    return BadRequest();
+                _context.Entry(item).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return NotFound();
         }
 
         [HttpDelete("{id}")]
