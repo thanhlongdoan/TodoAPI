@@ -25,7 +25,8 @@ namespace TodoApi.Controllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Birthday = item.Birthday.Ticks,
+                    //Birthday = item.Birthday.Ticks,
+                    Birthday = (item.Birthday.ToUniversalTime().Ticks - 621355968000000000) / 10000,
                     Gender = item.Gender,
                     Email = item.Email,
                     NumberPhone = item.NumberPhone,
