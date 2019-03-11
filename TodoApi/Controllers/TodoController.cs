@@ -60,26 +60,13 @@ namespace TodoApi.Controllers
             }
             else
             {
-                var query = (from todo in _context.TodoItems
-                             join user in _context.Users
-                             on todo.UserId equals user.Id
-                             where userId == todo.UserId
-                             select new
-                             {
-                                 user.Id,
-                                 user.Name,
-                                 user.Birthday,
-                                 user.Address,
-                                 user.NumberPhone
-                             }).FirstOrDefault();
+                User user = _context.Users.Find(userId);
                 GetTodoViewModel model = new GetTodoViewModel
                 {
-                    Id = query.Id,
-                    Name = query.Name,
-                    Birthday = query.Birthday,
-                    Address = query.Address,
-                    NumberPhone = query.NumberPhone,
-                    TodoItems = todoItem
+                    Id = todoItem.Id,
+                    Name = todoItem.Name,
+                    IsComplete = todoItem.IsComplete,
+                    InfoUser = user
                 };
                 return model;
             }

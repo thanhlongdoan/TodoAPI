@@ -16,11 +16,23 @@ namespace TodoApi.Controllers
             _context = context;
         }
         [HttpGet("{id}")]
-        public ActionResult<User> GetUser(string id)
+        public ActionResult<GetUserViewModel> GetUser(string id)
         {
             var item = _context.Users.Find(id);
             if (item != null)
-                return item;
+            {
+                GetUserViewModel model = new GetUserViewModel
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Birthday = (item.Birthday - new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime()),
+                    Gender = item.Gender,
+                    Email = item.Email,
+                    NumberPhone = item.NumberPhone,
+                    Address = item.Address
+                };
+                return model;
+            }
             return NotFound();
         }
         [HttpPost]
@@ -38,33 +50,21 @@ namespace TodoApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(string id, User user)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    var item = _context.Users.Find(id);
-            //    if (id == user.Id)
-            //    {
-            //        _context.Entry(user).State = EntityState.Modified;
-            //        _context.SaveChanges();
-            //        return Ok();
-            //    }
-            //    return BadRequest();
-            //}
-            //return BadRequest(ModelState);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != user.Id)
+            var users = await _context.Users.AnyAsync(x => x.Id == id);
+            if (id != user.Id && !users)
             {
                 return BadRequest();
             }
 
             _context.Entry(user).State = EntityState.Modified;
-            _context.Users.Update(user);
             _context.SaveChanges();
-            return Ok();
 
+            return Ok();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)

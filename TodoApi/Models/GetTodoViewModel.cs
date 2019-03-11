@@ -7,11 +7,9 @@ namespace TodoApi.Models
 {
     public class GetTodoViewModel
     {
-        public string Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
-        public DateTime Birthday { get; set; }
-        public string Address { get; set; }
-        public string NumberPhone { get; set; }
-        public TodoItem TodoItems { get; set; }
+        public bool IsComplete { get; set; }
+        public User InfoUser { get; set; }
     }
 }
