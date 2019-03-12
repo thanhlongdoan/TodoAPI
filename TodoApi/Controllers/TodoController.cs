@@ -61,24 +61,44 @@ namespace TodoApi.Controllers
             else
             {
                 var user = _context.Users.Find(userId);
-                GetUserViewModel modelUser = new GetUserViewModel
+
+                //th user khong co
+                if (user == null)
                 {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Birthday = user.Birthday.Ticks,
-                    Gender = user.Gender,
-                    Email = user.Email,
-                    NumberPhone = user.NumberPhone,
-                    Address = user.Address
-                };
-                GetTodoViewModel model = new GetTodoViewModel
+                    GetTodoViewModel model = new GetTodoViewModel
+                    {
+                        Id = todoItem.Id,
+                        Name = todoItem.Name,
+                        IsComplete = todoItem.IsComplete,
+                        InfoUser = null
+                    };
+
+                    return model;
+                }
+                //th user co 
+                else
                 {
-                    Id = todoItem.Id,
-                    Name = todoItem.Name,
-                    IsComplete = todoItem.IsComplete,
-                    InfoUser = modelUser
-                };
-                return model;
+                    GetUserViewModel modelUser = new GetUserViewModel
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Birthday = (user.Birthday.Ticks - 621355968000000000) / 10000,
+                        Gender = user.Gender,
+                        Email = user.Email,
+                        NumberPhone = user.NumberPhone,
+                        Address = user.Address
+                    };
+
+                    GetTodoViewModel model = new GetTodoViewModel
+                    {
+                        Id = todoItem.Id,
+                        Name = todoItem.Name,
+                        IsComplete = todoItem.IsComplete,
+                        InfoUser = modelUser
+                    };
+
+                    return model;
+                }
             }
         }
 

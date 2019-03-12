@@ -16,6 +16,7 @@ namespace TodoApi.Controllers
         {
             _context = context;
         }
+
         [HttpGet("{id}")]
         public ActionResult<GetUserViewModel> GetUser(string id)
         {
@@ -36,6 +37,7 @@ namespace TodoApi.Controllers
             }
             return NotFound();
         }
+
         [HttpPost]
         public IActionResult Create(AddUserViewModel user)
         {
@@ -102,6 +104,7 @@ namespace TodoApi.Controllers
 
             return Ok();
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
