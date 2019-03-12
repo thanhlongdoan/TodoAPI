@@ -19,7 +19,7 @@ namespace TodoApi.Models
         public string NumberPhone { get; set; }
 
         public string Address { get; set; }
-        public List<TodoItem> ListTodo { get; set; }
+        public List<GetTodoInUserViewModel> ListTodo { get; set; }
     }
 
     public class AddUserViewModel

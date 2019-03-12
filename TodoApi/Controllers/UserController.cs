@@ -19,51 +19,54 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GetUserViewModel>>> GetAllUser()
+        public ActionResult<IEnumerable<GetUserViewModel>> GetAllUser()
         {
-            var user = await _context.Users.Take(2).ToListAsync();
-            List<GetUserViewModel> list = new List<GetUserViewModel>();
-            foreach (var item in user)
-            {
-                var todo = await _context.TodoItems.Where(x => x.UserId == item.Id).ToListAsync();
-                GetUserViewModel model = new GetUserViewModel
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Birthday = (item.Birthday.Ticks - 621355968000000000) / 10000,
-                    Gender = item.Gender,
-                    Email = item.Email,
-                    NumberPhone = item.NumberPhone,
-                    Address = item.Address,
-                    ListTodo = todo
-                };
-                list.Add(model);
-            }
-
-            return list;
+            var users = from user in _context.Users
+                        select new GetUserViewModel
+                        {
+                            Id = user.Id,
+                            Name = user.Name,
+                            Birthday = (user.Birthday.Ticks - 621355968000000000) / 10000,
+                            Gender = user.Gender,
+                            Email = user.Email,
+                            NumberPhone = user.NumberPhone,
+                            Address = user.Address,
+                            ListTodo = (from todo in _context.TodoItems
+                                        where todo.UserId == user.Id
+                                        select new GetTodoInUserViewModel
+                                        {
+                                            Id = todo.Id,
+                                            Name = todo.Name,
+                                            IsComplete = todo.IsComplete
+                                        }).ToList()
+                        };
+            return users.ToList();
         }
 
         [HttpGet("{id}")]
         public ActionResult<GetUserViewModel> GetUser(string id)
         {
-            var item = _context.Users.Find(id);
-            var todo = _context.TodoItems.Where(x => x.UserId == item.Id).ToList();
-            if (item != null)
-            {
-                GetUserViewModel model = new GetUserViewModel
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Birthday = (item.Birthday.Ticks - 621355968000000000) / 10000,
-                    Gender = item.Gender,
-                    Email = item.Email,
-                    NumberPhone = item.NumberPhone,
-                    Address = item.Address,
-                    ListTodo = todo
-                };
-                return model;
-            }
-            return NotFound();
+            var users = from user in _context.Users
+                        where user.Id == id
+                        select new GetUserViewModel
+                        {
+                            Id = user.Id,
+                            Name = user.Name,
+                            Birthday = (user.Birthday.Ticks - 621355968000000000) / 10000,
+                            Gender = user.Gender,
+                            Email = user.Email,
+                            NumberPhone = user.NumberPhone,
+                            Address = user.Address,
+                            ListTodo = (from todo in _context.TodoItems
+                                        where todo.UserId == user.Id
+                                        select new GetTodoInUserViewModel
+                                        {
+                                            Id = todo.Id,
+                                            Name = todo.Name,
+                                            IsComplete = todo.IsComplete
+                                        }).ToList()
+                        };
+            return users.FirstOrDefault();
         }
 
         [HttpPost]
@@ -87,7 +90,6 @@ namespace TodoApi.Controllers
 
                 _context.Users.Add(model);
                 _context.SaveChanges();
-
                 return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
             }
             return BadRequest(ModelState);

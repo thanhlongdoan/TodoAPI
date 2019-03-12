@@ -12,4 +12,11 @@ namespace TodoApi.Models
         public bool IsComplete { get; set; }
         public GetUserViewModel InfoUser { get; set; }
     }
+
+    public class GetTodoInUserViewModel
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public bool IsComplete { get; set; }
+    }
 }
