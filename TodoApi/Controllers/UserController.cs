@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TodoApi.Models;
 
@@ -25,8 +26,7 @@ namespace TodoApi.Controllers
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    //Birthday = item.Birthday.Ticks,
-                    Birthday = (item.Birthday.ToUniversalTime().Ticks - 621355968000000000) / 10000,
+                    Birthday = (item.Birthday.Ticks - 621355968000000000) / 10000,
                     Gender = item.Gender,
                     Email = item.Email,
                     NumberPhone = item.NumberPhone,
@@ -37,32 +37,67 @@ namespace TodoApi.Controllers
             return NotFound();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public IActionResult Create(AddUserViewModel user)
         {
             if (ModelState.IsValid)
             {
                 user.Id = Guid.NewGuid().ToString();
-                await _context.Users.AddAsync(user);
+
+                DateTime dtime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                User model = new User
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Birthday = dtime.AddMilliseconds(user.Birthday),
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    NumberPhone = user.NumberPhone,
+                    Address = user.Address
+                };
+
+                _context.Users.Add(model);
                 _context.SaveChanges();
+
                 return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
             }
             return BadRequest(ModelState);
         }
+
+        private static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+        {
+            System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp);
+            return dtDateTime;
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Edit(string id, User user)
+        public IActionResult Edit(string id, EditUserViewModel user)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var users = await _context.Users.AnyAsync(x => x.Id == id);
+            var users = _context.Users.Any(x => x.Id == id);
+
             if (id != user.Id && !users)
             {
                 return BadRequest();
             }
+            DateTime dtime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-            _context.Entry(user).State = EntityState.Modified;
+            User model = new User
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Birthday = dtime.AddMilliseconds(user.Birthday),
+                Gender = user.Gender,
+                Email = user.Email,
+                NumberPhone = user.NumberPhone,
+                Address = user.Address
+            };
+
+            _context.Entry(model).State = EntityState.Modified;
             _context.SaveChanges();
 
             return Ok();
