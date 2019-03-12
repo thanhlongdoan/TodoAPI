@@ -54,51 +54,34 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<GetTodoViewModel>> GetTodoItem(long id, string userId)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
+            var user = _context.Users.Find(userId);
+
+            if (todoItem == null || user == null)
             {
                 return NotFound();
             }
             else
             {
-                var user = _context.Users.Find(userId);
-
-                //th user khong co
-                if (user == null)
+                GetUserViewModel modelUser = new GetUserViewModel
                 {
-                    GetTodoViewModel model = new GetTodoViewModel
-                    {
-                        Id = todoItem.Id,
-                        Name = todoItem.Name,
-                        IsComplete = todoItem.IsComplete,
-                        InfoUser = null
-                    };
+                    Id = user.Id,
+                    Name = user.Name,
+                    Birthday = (user.Birthday.Ticks - 621355968000000000) / 10000,
+                    Gender = user.Gender,
+                    Email = user.Email,
+                    NumberPhone = user.NumberPhone,
+                    Address = user.Address
+                };
 
-                    return model;
-                }
-                //th user co 
-                else
+                GetTodoViewModel model = new GetTodoViewModel
                 {
-                    GetUserViewModel modelUser = new GetUserViewModel
-                    {
-                        Id = user.Id,
-                        Name = user.Name,
-                        Birthday = (user.Birthday.Ticks - 621355968000000000) / 10000,
-                        Gender = user.Gender,
-                        Email = user.Email,
-                        NumberPhone = user.NumberPhone,
-                        Address = user.Address
-                    };
+                    Id = todoItem.Id,
+                    Name = todoItem.Name,
+                    IsComplete = todoItem.IsComplete,
+                    InfoUser = modelUser
+                };
 
-                    GetTodoViewModel model = new GetTodoViewModel
-                    {
-                        Id = todoItem.Id,
-                        Name = todoItem.Name,
-                        IsComplete = todoItem.IsComplete,
-                        InfoUser = modelUser
-                    };
-
-                    return model;
-                }
+                return model;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoApi.Models;
@@ -17,10 +18,36 @@ namespace TodoApi.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<GetUserViewModel>>> GetAllUser()
+        {
+            var user = await _context.Users.Take(2).ToListAsync();
+            List<GetUserViewModel> list = new List<GetUserViewModel>();
+            foreach (var item in user)
+            {
+                var todo = await _context.TodoItems.Where(x => x.UserId == item.Id).ToListAsync();
+                GetUserViewModel model = new GetUserViewModel
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Birthday = (item.Birthday.Ticks - 621355968000000000) / 10000,
+                    Gender = item.Gender,
+                    Email = item.Email,
+                    NumberPhone = item.NumberPhone,
+                    Address = item.Address,
+                    ListTodo = todo
+                };
+                list.Add(model);
+            }
+
+            return list;
+        }
+
         [HttpGet("{id}")]
         public ActionResult<GetUserViewModel> GetUser(string id)
         {
             var item = _context.Users.Find(id);
+            var todo = _context.TodoItems.Where(x => x.UserId == item.Id).ToList();
             if (item != null)
             {
                 GetUserViewModel model = new GetUserViewModel
@@ -31,7 +58,8 @@ namespace TodoApi.Controllers
                     Gender = item.Gender,
                     Email = item.Email,
                     NumberPhone = item.NumberPhone,
-                    Address = item.Address
+                    Address = item.Address,
+                    ListTodo = todo
                 };
                 return model;
             }
@@ -54,7 +82,7 @@ namespace TodoApi.Controllers
                     Gender = user.Gender,
                     Email = user.Email,
                     NumberPhone = user.NumberPhone,
-                    Address = user.Address
+                    Address = user.Address,
                 };
 
                 _context.Users.Add(model);
@@ -115,6 +143,23 @@ namespace TodoApi.Controllers
                 _context.SaveChanges();
                 return Ok();
             }
+            return NotFound();
+        }
+
+        [HttpGet("CheckBirthday")]
+        public ActionResult CheckBirthday(long birthday)
+        {
+            long dtimeNow = (DateTime.Now.Ticks - 621355968000000000) / 10000;
+            if (birthday <= dtimeNow)
+                return Ok();
+            return NotFound();
+        }
+        [HttpGet("CheckEmail")]
+        public ActionResult CheckEmail(string email)
+        {
+            var item = _context.Users.Where(x => x.Email == email).FirstOrDefault(); ;
+            if (item == null)
+                return Ok();
             return NotFound();
         }
     }
